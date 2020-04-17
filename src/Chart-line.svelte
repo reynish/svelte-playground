@@ -13,6 +13,8 @@
 	let width = 500;
 	let height = 200;
 
+  let tooltip = {x:0,y:0, show: false};
+
   $: xScale = scaleLinear()
 		.domain([minX, maxX])
 		.range([pad.x, width - pad.x]);
@@ -29,18 +31,25 @@
 
 <svg viewBox="0 0 {width} {height}">
   {#each points as p, i}
-      <rect
-        x="{xScale(p.x) - 5}"
-        y="{yScale(p.y) - 5}"
-        width="{10}"
-        height="{10}"
-        on:mousemove="{e => m = { x: e.clientX, y: e.clientY }}"
-      ></rect>
-    {/each}
-  <path class="path-line" d={path}></path>
+    <rect
+      class="bar"
+      x="{xScale(p.x) - 5}"
+      y="{yScale(p.y) - 10}"
+      width="{10}"
+      height="{20}"
+      on:click={e => tooltip = { x: xScale(p.x) - 5, y: yScale(p.y) - 5, year: p.x, value: p.y, show: true }}
+    ></rect>
+  {/each}
+  <path class="path-line" d={path} pointer-events="none"></path>
+  <text x={tooltip.x} y={tooltip.y} visibility="{tooltip.show ? 'visible' : 'hidden'}">{tooltip.year}</text>
 </svg>
 
+
 <style>
+  div { 
+    display: inline
+  }
+  
 	.path-line {
 		fill: none;
 		stroke: rgb(86,95,246);
@@ -49,7 +58,7 @@
 		stroke-width: 2;
 	}
   
-  rect {
+  .bar {
     fill: rgb(179,184,252)
   }
 </style>
